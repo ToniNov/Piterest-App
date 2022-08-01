@@ -21,7 +21,6 @@ export const Pin: FC<PropsType> = ({pin}) => {
     },[pin.image])
 
 
-
     return (
         <View style={styles.pin}>
 
@@ -33,7 +32,9 @@ export const Pin: FC<PropsType> = ({pin}) => {
                 </Pressable>
             </View>
 
-            <Text style={styles.title}>{pin.title}</Text>
+            <Text style={styles.title} numberOfLines={2} >
+                {pin.title}
+            </Text>
 
         </View>
     );
@@ -43,19 +44,22 @@ export const Pin: FC<PropsType> = ({pin}) => {
 const styles = StyleSheet.create({
     pin: {
         width: '100%',
+        padding: 4,
     },
     title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        margin: 10,
+        fontSize: 16,
+        lineHeight: 22,
+        fontWeight: '600',
+        margin: 5,
+        color: '#181818',
     },
     image: {
         width: '100%',
-        borderRadius: 25,
+        borderRadius: 15,
         aspectRatio: 1 / 2,
     },
     heartButton: {
-        backgroundColor: '#7d7878',
+        backgroundColor: '#d4d1d5',
         position: "absolute",
         bottom: 10,
         right: 10,
