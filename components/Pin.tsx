@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {Text, View} from "./Themed";
 import {Image, Pressable, StyleSheet} from "react-native";
 import {PinPropsType} from "../screens/HomeScreen";
@@ -9,13 +9,29 @@ type PropsType = {
 }
 
 export const Pin: FC<PropsType> = ({pin}) => {
+
+    const [ratio, setRatio] = useState(1)
+
+    const onLike =()=> {};
+
+    useEffect(()=> {
+        if (pin.image) {
+            Image.getSize(pin.image, (width, height) => setRatio(width / height));
+        }
+    },[pin.image])
+
+
+
     return (
         <View style={styles.pin}>
-            <Image style={styles.image}
-                   source={{uri: pin.image}}/>
-            <Pressable>
-                <AntDesign name="hearto" size={24} color="black"/>
-            </Pressable>
+
+            <View>
+                <Image style={[styles.image,{aspectRatio:ratio} ]}
+                       source={{uri: pin.image}}/>
+                <Pressable style={styles.heartButton} onPress={onLike} >
+                    <AntDesign name="hearto" size={24} color="black"/>
+                </Pressable>
+            </View>
 
             <Text style={styles.title}>{pin.title}</Text>
 
@@ -35,7 +51,15 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: 200,
         borderRadius: 25,
-    }
+        aspectRatio: 1 / 2,
+    },
+    heartButton: {
+        backgroundColor: '#7d7878',
+        position: "absolute",
+        bottom: 10,
+        right: 10,
+        padding: 5,
+        borderRadius: 50,
+    },
 });
