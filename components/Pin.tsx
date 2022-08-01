@@ -26,6 +26,7 @@ export const Pin = (props: any) => {
     };
 
     const goToPinPage = () => {
+        // @ts-ignore
         navigation.navigate("Pin", {id});
     };
 

@@ -16,6 +16,7 @@ export const PinScreen = () => {
     const route = useRoute();
     const insets = useSafeAreaInsets();
 
+    // @ts-ignore
     const pinId = route.params?.id;
 
     const pin = pins.find((p) => p.id === pinId)
