@@ -19,6 +19,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import {RootStackParamList, RootTabParamList, RootTabScreenProps} from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import {PinScreen} from "../screens/PinScreen";
+import {CreatePinScreen} from "../screens/CreatePinScreen";
 
 export default function Navigation({colorScheme}: { colorScheme: ColorSchemeName }) {
     return (
@@ -76,10 +77,10 @@ function BottomTabNavigator() {
                 }}
             />
             <BottomTab.Screen
-                name="Create"
-                component={HomeScreen}
+                name="CreatePin"
+                component={CreatePinScreen}
                 options={{
-                    title: 'Add',
+                    title: 'Create Pin',
                     tabBarIcon: ({color}) =>
                         <FontAwesome name="plus" size={30} color={color}/>,
                 }}
