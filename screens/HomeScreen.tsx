@@ -7,6 +7,7 @@ import pins from '../assets/data/pins';
 export type PinPropsType = {
     title: string
     image: string
+    id: string
 }
 
 export default function HomeScreen({navigation}: RootTabScreenProps<'TabOne'>) {

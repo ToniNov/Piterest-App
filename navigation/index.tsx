@@ -18,6 +18,7 @@ import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
+import {PinScreen} from "../screens/PinScreen";
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -36,15 +37,16 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
-      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
-      </Stack.Group>
-    </Stack.Navigator>
-  );
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="Root" component={BottomTabNavigator} options={{headerShown: false}}/>
+            <Stack.Screen name="Pin" component={PinScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="NotFound" component={NotFoundScreen} options={{title: 'Oops!'}}/>
+            <Stack.Group screenOptions={{presentation: 'modal'}}>
+                <Stack.Screen name="Modal" component={ModalScreen}/>
+            </Stack.Group>
+        </Stack.Navigator>
+    );
 }
 
 /**
