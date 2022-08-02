@@ -21,9 +21,9 @@ export const MasonryList = ({pins}: IMasonryList) => {
             <View style={styles.container}>
 
                 {Array.from(Array(numColumns)).map((_, colIndex) => (
-                    <View style={styles.column}>
+                    <View key={`column_${colIndex}`} style={styles.column}>
                         {pins
-                            .filter((item, index) => index % numColumns === colIndex)
+                            .filter((_, index) => index % numColumns === colIndex)
                             .map((pin) => (
                                 <Pin pin={pin} key={pin.id}/>
                             ))}
