@@ -1,32 +1,47 @@
 import React, {FC, useEffect, useState} from 'react';
 import {Text, View} from "./Themed";
 import {Image, Pressable, StyleSheet} from "react-native";
-import {PinPropsType} from "../screens/HomeScreen";
 import {AntDesign} from '@expo/vector-icons';
 import {useNavigation} from "@react-navigation/native";
+import {useNhostClient} from "@nhost/react";
 
-type PropsType = {
-    pin: PinPropsType
-}
+// type PropsType = {
+//     pin: PinPropsType
+// }
 
 export const Pin = (props: any) => {
 
     const {id, image, title} = props.pin
+    const [imageUri, setImageUri] = useState("")
 
     const [ratio, setRatio] = useState(1);
     const navigation = useNavigation();
+    const nhost = useNhostClient();
+
+    const fetchImage = async ()=> {
+        const result = await nhost.storage.getPresignedUrl({
+            fileId: image
+        });
+        if (result.presignedUrl?.url){
+            setImageUri(result.presignedUrl.url);
+        }
+    };
 
     useEffect(() => {
-        if (image) {
-            Image.getSize(image, (width, height) => setRatio(width / height));
+        fetchImage();
+    }, [image]);
+
+
+    useEffect(() => {
+        if (imageUri) {
+            Image.getSize(imageUri, (width, height) => setRatio(width / height));
         }
-    }, [image])
+    }, [imageUri]);
 
     const onLike = () => {
     };
 
     const goToPinPage = () => {
-        // @ts-ignore
         navigation.navigate("Pin", {id});
     };
 
@@ -35,7 +50,7 @@ export const Pin = (props: any) => {
 
             <View>
                 <Image style={[styles.image,{aspectRatio:ratio} ]}
-                       source={{uri:image}}/>
+                       source={{uri:imageUri}}/>
                 <Pressable style={styles.heartButton} onPress={onLike} >
                     <AntDesign name="hearto" size={24} color="black"/>
                 </Pressable>

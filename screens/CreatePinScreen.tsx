@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Button, Image, View, TextInput, StyleSheet, Alert} from 'react-native';
+import {Button, Image, View, TextInput, StyleSheet, Alert, Platform} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import {useNhostClient} from "@nhost/react";
 import {useNavigation} from "@react-navigation/core";
@@ -18,7 +18,7 @@ mutation MyMutation ($image: String!,$title: String) {
 }`;
 
 export const CreatePinScreen = () => {
-    const [image, setImage] = useState<string | null>(null);
+    const [imageUri, setImageUri] = useState<string | null>(null);
     const [title, setTitle] = useState("");
 
     const nhost = useNhostClient();
@@ -33,16 +33,46 @@ export const CreatePinScreen = () => {
         });
 
         if (!result.cancelled) {
-            setImage(result.uri);
+            setImageUri(result.uri);
         }
     };
 
+    const uploadFile = async () => {
+        if (!imageUri){
+            return {error: {message:"No image selected"},};
+        }
+        // extract image name & extension
+        const parts = imageUri.split('/')
+        const name = parts[parts.length - 1];
+        const nameParts =name.split('.');
+        const extensionImage = nameParts[nameParts.length - 1];
+        // Only for OS
+        const uri = Platform.OS === "ios" ? imageUri.replace("file://", "") : imageUri;
+
+        const result = await nhost.storage.upload({
+            file:{
+                name: name,
+                type: `image/${extensionImage}`,
+                uri,
+            },
+        });
+        return  result;
+    };
+
     const onSubmit = async () => {
+
+        const uploadResult = await uploadFile();
+
+        if(uploadResult.error){
+            Alert.alert("Error uploading the image", uploadResult.error.message);
+            return
+        }
+
         const result = await nhost.graphql.request(CREATE_PIN_MUTATION, {
             title,
-            image: "https://i.pinimg.com/236x/27/fa/4f/27fa4f167db6e2db8c6a81edc242a30b.jpg"
+            image: uploadResult.fileMetadata.id,
         });
-        console.log(result)
+
         if (result.error){
             if ("message" in result.error) {
                 Alert.alert("Error creating the post", result.error.message)
@@ -55,10 +85,10 @@ export const CreatePinScreen = () => {
     return (
         <View style={styles.root}>
             <Button title="Upload yor Pin" onPress={pickImage}/>
-            {image && (
+            {imageUri && (
                 <>
                     <Image
-                        source = {{uri: image }}
+                        source = {{uri: imageUri }}
                         style = {styles.image}
                     />
                     <TextInput
