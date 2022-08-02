@@ -3,13 +3,16 @@ import {Text, View} from '../components/Themed';
 import {MasonryList} from "../constants/MasonryList";
 import pins from "../assets/data/pins";
 import {Entypo, Feather} from "@expo/vector-icons";
+import {useSignOut} from "@nhost/react";
 
 export default function ProfileScreen() {
+    const {signOut} = useSignOut();
+
     return (
         <ScrollView style={styles.container}>
             <View style={styles.header}>
                 <View style={styles.icons}>
-                    <Pressable >
+                    <Pressable  onPress={signOut}>
                         <Feather name="share" size={24} color="black" style={styles.icon} />
                     </Pressable>
                     <Entypo
