@@ -7,6 +7,7 @@ import {StatusBar} from "expo-status-bar";
 import {Ionicons} from "@expo/vector-icons";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {useNhostClient} from "@nhost/react";
+import {RemoteImage} from "../components/RemoteImage";
 
 const GET_PIN_QUERY = `
             query MyQuery ($id: uuid!) {
@@ -26,67 +27,57 @@ const GET_PIN_QUERY = `
 
 export const PinScreen = () => {
 
-    const [ratio, setRatio] = useState(1);
-    const [pin, setPin] = useState<any>(null)
+    const [pin, setPin] = useState<any>(null);
 
     const nhost = useNhostClient();
-
     const navigation = useNavigation();
     const route = useRoute();
     const insets = useSafeAreaInsets();
 
-    // @ts-ignore
     const pinId = route.params?.id;
 
     const fetchPin = async (pinId: string | undefined) => {
-        const response = await nhost.graphql.request(GET_PIN_QUERY,{id: pinId})
-        if (response.error){
-            Alert.alert("Error fetching the pin")
+        const response = await nhost.graphql.request(GET_PIN_QUERY, {id: pinId})
+        if (response.error) {
+            Alert.alert("Error fetching the pin", response.error.message)
         } else {
             setPin(response.data.pins_by_pk);
         }
     };
 
-    useEffect(()=>{
-        fetchPin(pinId);
-    },[pinId])
-
     useEffect(() => {
-        if (pin?.image) {
-            Image.getSize(pin.image, (width, height) => setRatio(width / height));
-        }
-    }, [pin])
+        fetchPin(pinId);
+    }, [pinId])
 
     const goBack = () => navigation.goBack();
 
-    if(!pin) {
+    if (!pin) {
         return <Text>Pin not found</Text>;
     }
 
 
     return (
         <SafeAreaView style={styles.rootBack}>
-            <StatusBar style='light' />
+            <StatusBar style='light'/>
             <View style={styles.root}>
-                <Image source={{uri: pin.image}}
-                       style={[styles.image, {aspectRatio: ratio}]}/>
+                <RemoteImage fileId={pin.image}/>
+
                 <Text style={styles.title}>{pin.title}</Text>
 
             </View>
             <Pressable
                 onPress={goBack}
-                style={[styles.backBtn,{top: insets.top + 20}]}
+                style={[styles.backBtn, {top: insets.top + 20}]}
             >
-                <Ionicons name="chevron-back" size={34} color={"white"} />
+                <Ionicons name="chevron-back" size={34} color={"white"}/>
             </Pressable>
-
 
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    rootBack:{
+    rootBack: {
         backgroundColor: '#000000'
     },
     root: {
@@ -95,21 +86,21 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
     },
-    image: {
-        width: '100%',
-        borderTopLeftRadius: 50,
-        borderTopRightRadius: 50,
-    },
+    // image: {
+    //     width: '100%',
+    //     borderTopLeftRadius: 50,
+    //     borderTopRightRadius: 50,
+    // },
     title: {
-       margin: 10,
-       fontSize: 24,
-       fontWeight: "600",
+        margin: 10,
+        fontSize: 24,
+        fontWeight: "600",
         textAlign: "center",
         lineHeight: 35,
     },
-    backBtn:{
-      position:"absolute",
-      top: 50,
-      left: 10,
+    backBtn: {
+        position: "absolute",
+        top: 50,
+        left: 10,
     },
 });

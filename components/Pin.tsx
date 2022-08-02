@@ -4,6 +4,7 @@ import {Image, Pressable, StyleSheet} from "react-native";
 import {AntDesign} from '@expo/vector-icons';
 import {useNavigation} from "@react-navigation/native";
 import {useNhostClient} from "@nhost/react";
+import {RemoteImage} from "./RemoteImage";
 
 // type PropsType = {
 //     pin: PinPropsType
@@ -12,31 +13,8 @@ import {useNhostClient} from "@nhost/react";
 export const Pin = (props: any) => {
 
     const {id, image, title} = props.pin
-    const [imageUri, setImageUri] = useState("")
 
-    const [ratio, setRatio] = useState(1);
     const navigation = useNavigation();
-    const nhost = useNhostClient();
-
-    const fetchImage = async ()=> {
-        const result = await nhost.storage.getPresignedUrl({
-            fileId: image
-        });
-        if (result.presignedUrl?.url){
-            setImageUri(result.presignedUrl.url);
-        }
-    };
-
-    useEffect(() => {
-        fetchImage();
-    }, [image]);
-
-
-    useEffect(() => {
-        if (imageUri) {
-            Image.getSize(imageUri, (width, height) => setRatio(width / height));
-        }
-    }, [imageUri]);
 
     const onLike = () => {
     };
@@ -49,8 +27,7 @@ export const Pin = (props: any) => {
         <Pressable onPress={goToPinPage} style={styles.pin}>
 
             <View>
-                <Image style={[styles.image,{aspectRatio:ratio} ]}
-                       source={{uri:imageUri}}/>
+                <RemoteImage fileId={image}/>
                 <Pressable style={styles.heartButton} onPress={onLike} >
                     <AntDesign name="hearto" size={24} color="black"/>
                 </Pressable>
@@ -76,11 +53,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         margin: 5,
         color: '#181818',
-    },
-    image: {
-        width: '100%',
-        borderRadius: 15,
-        aspectRatio: 1 / 2,
     },
     heartButton: {
         backgroundColor: '#d4d1d5',
