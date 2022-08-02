@@ -1,10 +1,28 @@
 import React, {useState} from 'react';
-import {Button, Image, View, TextInput, StyleSheet } from 'react-native';
+import {Button, Image, View, TextInput, StyleSheet, Alert} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import {useNhostClient} from "@nhost/react";
+import {useNavigation} from "@react-navigation/core";
+
+const CREATE_PIN_MUTATION = `
+mutation MyMutation ($image: String!,$title: String) {
+  insert_pins(objects: {image: $image , title: $title}) {
+    returning {
+      created_at
+      id
+      image
+      title
+      user_id
+    }
+  }
+}`;
 
 export const CreatePinScreen = () => {
     const [image, setImage] = useState<string | null>(null);
     const [title, setTitle] = useState("");
+
+    const nhost = useNhostClient();
+    const navigation = useNavigation();
 
 
     const pickImage = async () => {
@@ -19,8 +37,19 @@ export const CreatePinScreen = () => {
         }
     };
 
-    const onSubmit = () => {
-
+    const onSubmit = async () => {
+        const result = await nhost.graphql.request(CREATE_PIN_MUTATION, {
+            title,
+            image: "https://i.pinimg.com/236x/27/fa/4f/27fa4f167db6e2db8c6a81edc242a30b.jpg"
+        });
+        console.log(result)
+        if (result.error){
+            if ("message" in result.error) {
+                Alert.alert("Error creating the post", result.error.message)
+            }
+        } else {
+          navigation.goBack();
+        }
     };
 
     return (
