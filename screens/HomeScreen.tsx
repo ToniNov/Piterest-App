@@ -1,12 +1,14 @@
 import {RootTabScreenProps} from '../types';
-import pins from '../assets/data/pins';
 import {MasonryList} from "../constants/MasonryList";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {useNhostClient} from "@nhost/react";
+import {Alert} from "react-native";
 
 export default function HomeScreen({navigation}: RootTabScreenProps<'Home'>) {
 
     const nhost = useNhostClient();
+
+    const[pins,setPins]= useState([])
 
     const fetchPins = async () => {
         const response = await nhost.graphql.request(`
@@ -20,11 +22,16 @@ export default function HomeScreen({navigation}: RootTabScreenProps<'Home'>) {
              }
             }
         `);
-        console.log(response)
-    }
+
+        if(response.error){
+            Alert.alert("Error fetching pins")
+        } else {
+            setPins(response.data.pins)
+        }
+    };
 
     useEffect(() => {
-        fetchPins()
+        fetchPins();
     }, [])
 
     return (
