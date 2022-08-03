@@ -1,12 +1,50 @@
-import {Image, Pressable, ScrollView, StyleSheet} from 'react-native';
+import {ActivityIndicator, Alert, Image, Pressable, ScrollView, StyleSheet} from 'react-native';
 import {Text, View} from '../components/Themed';
 import {MasonryList} from "../constants/MasonryList";
 import pins from "../assets/data/pins";
 import {Entypo, Feather} from "@expo/vector-icons";
-import {useSignOut} from "@nhost/react";
+import {useNhostClient, useSignOut, useUserId} from "@nhost/react";
+import {useEffect, useState} from "react";
+
+const GET_USER_QUERY = `
+query MyQuery($id: uuid!) {
+  user(id: $id) {
+    id
+    avatarUrl
+    displayName
+    pins {
+      id
+      image
+      title
+      created_at
+    }
+  }
+}`
 
 export default function ProfileScreen() {
+    const [user,setUser] = useState()
+
     const {signOut} = useSignOut();
+    const nhost = useNhostClient();
+
+    const userId = useUserId();
+
+    const fetchUserData = async ()=> {
+        const result = await nhost.graphql.request(GET_USER_QUERY, {id: userId})
+        if (result.error) {
+            Alert.alert("Error fetching the user");
+        } else {
+            setUser(result.data.user)
+        }
+    };
+
+    useEffect(()=>{
+        fetchUserData();
+    },[]);
+
+    if (!user) {
+        return <ActivityIndicator/>
+    }
 
     return (
         <ScrollView style={styles.container}>
@@ -23,12 +61,12 @@ export default function ProfileScreen() {
                     />
                 </View>
                 <Image style={styles.image}
-                       source={{uri: "https://res.cloudinary.com/jerrick/image/upload/v1621833776/60ab3830cdfa36001e16ab3e.jpg"}}/>
-                <Text style={styles.title}>Toni Novik</Text>
+                       source={{uri: user.avatarUrl}}/>
+                <Text style={styles.title}>{user.displayName}</Text>
                 <Text style={styles.subTitle}>145 Followers | 575 Followings</Text>
             </View>
 
-            <MasonryList pins={pins}/>
+            <MasonryList pins={user.pins} onRefresh={fetchUserData}/>
         </ScrollView>
     );
 }
