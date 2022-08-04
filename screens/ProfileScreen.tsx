@@ -21,6 +21,7 @@ query MyQuery($id: uuid!) {
   }
 }`
 
+
 export default function ProfileScreen() {
     const [user,setUser] = useState()
 
@@ -60,8 +61,10 @@ export default function ProfileScreen() {
                         style={styles.icon}
                     />
                 </View>
+
                 <Image style={styles.image}
-                       source={{uri: user.avatarUrl}}/>
+                       source={{uri: user.avatarUrl && 'https://cdn4.vectorstock.com/i/thumb-large/94/53/avatar-icon-person-man-vector-38549453.jpg'}}/>
+
                 <Text style={styles.title}>{user.displayName}</Text>
                 <Text style={styles.subTitle}>145 Followers | 575 Followings</Text>
             </View>

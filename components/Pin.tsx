@@ -1,9 +1,8 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Text, View} from "./Themed";
-import {Image, Pressable, StyleSheet} from "react-native";
+import {Pressable, StyleSheet} from "react-native";
 import {AntDesign} from '@expo/vector-icons';
 import {useNavigation} from "@react-navigation/native";
-import {useNhostClient} from "@nhost/react";
 import {RemoteImage} from "./RemoteImage";
 
 // type PropsType = {
@@ -16,7 +15,10 @@ export const Pin = (props: any) => {
 
     const navigation = useNavigation();
 
+    const [isLike,setIssLike] = useState(false)
+
     const onLike = () => {
+        setIssLike(!isLike)
     };
 
     const goToPinPage = () => {
@@ -28,8 +30,11 @@ export const Pin = (props: any) => {
 
             <View>
                 <RemoteImage fileId={image}/>
-                <Pressable style={styles.heartButton} onPress={onLike} >
-                    <AntDesign name="hearto" size={24} color="black"/>
+                <Pressable style={styles.heartButton} onPress={onLike}>
+                    {isLike ?
+                        <AntDesign name="heart" size={24} color="red"/>
+                        :  <AntDesign name="heart" size={24} color="black"/>
+                    }
                 </Pressable>
             </View>
 
